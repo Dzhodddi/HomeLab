@@ -1,0 +1,20 @@
+- name: Create ansible user
+  hosts: homelab
+  tasks:
+    - name: Add the 'ansible' user with module user
+      ansible.builtin.user:
+        name: ansible
+      become: true
+    - name: Add public key to ansible user
+      ansible.posix.authorized_key:
+        user: ansible
+        key: "{{ lookup('file', '~/.ssh/ansible_homelab.pub') }}"
+      become: true
+    - name: Make sudo without password for ansible user
+      community.general.sudoers:
+        name: ansible
+        user: ansible
+        state: present
+        commands: ALL
+        nopassword: true
+      become: true
