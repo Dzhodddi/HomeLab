@@ -1,3 +1,6 @@
 base_packages:
   - unattended-upgrades
   - git
+base_allow_users:
+  - dietpi
+  - ansible
