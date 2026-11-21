@@ -1,3 +1,4 @@
+---
 - name: Create ansible user
   hosts: homelab
   tasks:
@@ -17,4 +18,10 @@
         state: present
         commands: ALL
         nopassword: true
+      become: true
+    - name: Install python3-apt
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 86400  # 1 day
+        name: "python3-apt"
       become: true

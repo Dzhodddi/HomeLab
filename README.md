@@ -22,7 +22,7 @@ Everything on the server comes from this repo.
 
 ### Step 1: bootstrap
 
-This creates the `ansible` user, installs its SSH key and gives it passwordless sudo.
+This creates the `ansible` user, installs its SSH key, gives it passwordless sudo, and installs `python3-apt` (Ansible's `apt` module needs it, also for `--check`).
 The `ansible` user doesn't exist yet, so this one run logs in as your existing sudo user with your personal key:
 
 ```bash
@@ -47,6 +47,38 @@ This should print `root`.
 
 From now on, Ansible connects as `ansible`, and you can run playbooks without any overrides.
 
+### Step 3: apply the configuration
+
+Preview what would change, without changing anything:
+
+```bash
+ansible-playbook site.yml --check --diff
+```
+
+Apply it:
+
+```bash
+ansible-playbook site.yml
+```
+
+Run it again: it should finish with `changed=0`. That means the server already matches this repo.
+
+`site.yml` is the main playbook. Run it after every change to the repo.
+
+## What gets configured
+
+### `base` role
+
+- Installs the packages listed in `roles/base/defaults/main.yml`
+- Turns on automatic security updates with `unattended-upgrades`
+- Unmasks and starts the `apt-daily` timers, which some images (such as DietPi) mask by default
+
+Check the timers on the server:
+
+```bash
+ansible all -m command -a 'systemctl list-timers apt-daily*'
+```
+
 ## Repo layout
 
 | File | What it is |
@@ -55,3 +87,5 @@ From now on, Ansible connects as `ansible`, and you can run playbooks without an
 | `inventory/hosts.yml` | The server and how to connect to it |
 | `requirements.yml` | Ansible collections this repo needs |
 | `bootstrap.yml` | One-time setup of the `ansible` user |
+| `site.yml` | Main playbook: applies all roles to the server |
+| `roles/base/` | Packages and automatic updates |

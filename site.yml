@@ -1,0 +1,7 @@
+---
+- name: Configure server
+  hosts: homelab
+  become: true
+
+  roles:
+    - base
