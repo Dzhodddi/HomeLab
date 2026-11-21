@@ -4,3 +4,5 @@ base_packages:
 base_allow_users:
   - dietpi
   - ansible
+  - dietpi@192.168.8.*
+  - ansible@192.168.8.*
